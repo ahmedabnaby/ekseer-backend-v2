@@ -1,0 +1,5 @@
+copy_of_iqama_number/
+venv/
+ekseer_api_v2/migrations
+ekseer_api_v2/__pycache__
+db.sqllite3
