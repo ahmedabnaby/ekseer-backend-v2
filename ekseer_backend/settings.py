@@ -26,9 +26,16 @@ SECRET_KEY = 'django-insecure-ks)g*o6-in3$nejnt%xat#goao($(+hn-a)wq)8050y9$0tsz4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "ahmedabnaby.97@gmail.com"
+EMAIL_HOST_PASSWORD = "vjvazazuqmrftjqn"
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ekseer_api_v2',
     'knox',
+    'django_rest_passwordreset'
 ]
 
 MIDDLEWARE = [

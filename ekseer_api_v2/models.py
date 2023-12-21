@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.core.validators import RegexValidator, EmailValidator, FileExtensionValidator
+from django.core.validators import RegexValidator, EmailValidator
+from django.dispatch import receiver
+from django.urls import reverse
+from django.core.mail import send_mail, EmailMessage
+from django_rest_passwordreset.signals import reset_password_token_created
+
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -117,3 +122,73 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.iqama_number
 
+class Call(models.Model):
+    id = models.AutoField(primary_key=True)
+    meeting_id = models.CharField(max_length=255, null=True, blank=True)
+    patient_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True)
+    doctor_id = models.IntegerField(null=True, blank=True)
+    doctor_time = models.CharField(max_length=255, null=True, blank=True)
+    patient_time = models.CharField(max_length=255, null=True, blank=True)
+    awaiting_time = models.CharField(max_length=255, null=True, blank=True)
+    is_new = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Consultation(models.Model):
+    id = models.AutoField(primary_key=True)
+    patient_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False, blank=False)
+    doctor_id = models.IntegerField(null=False, blank=False)
+    chief_complaint = models.CharField(max_length=255, null=False, blank=False)
+    history_of_illness = models.CharField(
+        max_length=255, null=False, blank=False)
+    review_of_systems = models.CharField(
+        max_length=255, null=False, blank=False)
+    call_id = models.ForeignKey(
+        Call, on_delete=models.CASCADE, null=True, blank=True)
+    examination = models.CharField(max_length=255, null=False, blank=False)
+    assessment = models.CharField(max_length=255, null=True, blank=True)
+    medication = models.CharField(max_length=255, null=True, blank=True)
+    sick_leave = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Rating(models.Model):
+    id = models.AutoField(primary_key=True)
+    patient_id = models.IntegerField(null=True, blank=True)
+
+    doctor_id = models.IntegerField(null=True, blank=True)
+    call_id = models.ForeignKey(
+        Call, on_delete=models.CASCADE, null=True, blank=True)
+    rating = models.IntegerField(null=True, blank=True)
+    message = models.CharField(
+        max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    # the below like concatinates your websites reset password url and the reset email token which will be required at a later stage
+    email_plaintext_message = "Open the link to reset your password" + " " + \
+        "{}{}".format(instance.request.build_absolute_uri("http://localhost:3000/confirm-reset-password/"),
+            reset_password_token.key)
+
+    """
+        this below line is the django default sending email function, 
+        takes up some parameter (title(email title), message(email body), from(email sender), to(recipient(s))
+    """
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="Crediation portal account"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "info@yourcompany.com",
+        # to:
+        [reset_password_token.user.email],
+        fail_silently=False,
+    )
