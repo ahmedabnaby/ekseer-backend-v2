@@ -8,6 +8,9 @@ urlpatterns = [
     path('consultations/', views.ConsultationViewSet.as_view()),
     path('ratings/', views.RatingViewSet.as_view()),
 
+    path('send-email/', views.SendEmailView.as_view(), name='send-email'),
+    path('search/', views.SearchView.as_view()),
+
     path('register/', views.CreateUserAPI.as_view()),
     path('create-call/', views.CreateCallAPI.as_view()),
     path('create-consultation/', views.CreateConsultationAPI.as_view()),

@@ -94,12 +94,42 @@ class User(AbstractBaseUser):
         null=True,
         blank=True,
     )
+    contract = models.FileField(
+        upload_to='doctors_contracts',
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+    no_objection_letter = models.FileField(
+        upload_to='doctors_no_objection_letter',
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+    additional_attachment = models.FileField(
+        upload_to='doctors_additional_attachment',
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+
     personal_photo = models.ImageField(
         upload_to='doctors_personal_photo',
         max_length=512,
         null=True,
         blank=True,
     )
+    
+    current_employer_name = models.CharField(
+        max_length=255, null=True, blank=True)
+    current_employer_license_num = models.CharField(
+        max_length=255, null=True, blank=True)
+    current_employer_city = models.CharField(
+        max_length=255, null=True, blank=True)
+    current_employer_website = models.CharField(
+        max_length=255, null=True, blank=True)
+
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_doctor = models.BooleanField(default=False)

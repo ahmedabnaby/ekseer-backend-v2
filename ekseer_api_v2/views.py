@@ -10,6 +10,8 @@ from knox import views as knox_views
 from django.contrib.auth import login
 import requests
 from rest_framework.views import APIView
+from django.core.mail import send_mail
+
 
 
 class CreateUserAPI(CreateAPIView):
@@ -140,4 +142,35 @@ class PaymentGetOrderView(APIView):
         print(response)
         print(orderId)
         return Response(response.json())
+    
+class SearchView(APIView):
+    def get(self, request):
+        query = request.GET.get('query')
+        if query:
+            results = User.objects.filter(iqama_number__icontains=query)
+            serializer = UserSerializer(results, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({'error': 'Query parameter is required'}, status=400)
+        
+class SendEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        fullname = request.data.get('full_name')
+        mobile_number = request.data.get('mobile_number')
+        email_address = request.data.get('email')
+        message = request.data.get('message')
+        recipient_list = ["ahmedabnaby.97@gmail.com"]
+
+        try:
+            send_mail(
+                subject='A new message from: '+ email_address,
+                message=f"\nFull Name: {fullname}\nMobile Number: {mobile_number}\n\nMessage: {message}",
+                from_email="Recieved from " + email_address,
+                recipient_list=recipient_list,  # Replace with actual recipient(s)
+            )
+            return Response({'success': True}, status=200)
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
     

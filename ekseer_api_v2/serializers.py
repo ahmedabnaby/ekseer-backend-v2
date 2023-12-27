@@ -36,7 +36,10 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'mobile_number', 
             'email', 
             'is_staff',
-            'is_verified'
+            'is_verified',
+            'contract',
+            'no_objection_letter',
+            'additional_attachment'
         ]
         extra_kwargs = {
             'password': {'write_only':True}
@@ -44,9 +47,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, validated_data):
-        # password = validated_data.pop('password')
-        # if password:
-        #     instance.set_password(password)
+        
         instance = super().update(instance, validated_data)
         return instance
 
@@ -68,7 +69,6 @@ class LoginSerializer(serializers.Serializer):
 
         user = authenticate(request=self.context.get('request'), iqama_number=iqama_number,
                             password=password)
-        print(user, "AAAAAAAARGH")
         if not user:
             raise serializers.ValidationError("Wrong Credentials.")
 
