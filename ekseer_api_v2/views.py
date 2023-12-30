@@ -120,7 +120,7 @@ class PaymentInitiationView(APIView):
         },
         "configuration": {
             "tokenizeCc": "true",
-            "returnUrl": "http://localhost:3000/payment",
+            "returnUrl": "https://ekseer.aabdelnaby.com/payment",
             "locale": "en",
             "paymentAction": "Authorize",
         }
@@ -161,7 +161,7 @@ class SendEmailView(APIView):
         mobile_number = request.data.get('mobile_number')
         email_address = request.data.get('email')
         message = request.data.get('message')
-        recipient_list = ["ahmedabnaby.97@gmail.com"]
+        recipient_list = ["info@alsahaba.sa"]
 
         try:
             send_mail(
